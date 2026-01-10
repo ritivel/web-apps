@@ -4290,5 +4290,6 @@
   "DE.Views.WatermarkSettingsDialog.textTransparency": "Separa telus",
   "DE.Views.WatermarkSettingsDialog.textUnderline": "Garis bawah",
   "DE.Views.WatermarkSettingsDialog.tipFontName": "Nama Fon",
-  "DE.Views.WatermarkSettingsDialog.tipFontSize": "Saiz Fon"
+  "DE.Views.WatermarkSettingsDialog.tipFontSize": "Saiz Fon",
+  "Common.Views.ShortcutsEditDialog.txtCantBeEdited": "This shortcut can’t be edited"
 }

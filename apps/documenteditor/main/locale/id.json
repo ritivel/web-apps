@@ -4290,5 +4290,6 @@
   "DE.Views.WatermarkSettingsDialog.textTransparency": "Semi Transparan",
   "DE.Views.WatermarkSettingsDialog.textUnderline": "Garis bawah",
   "DE.Views.WatermarkSettingsDialog.tipFontName": "Nama font",
-  "DE.Views.WatermarkSettingsDialog.tipFontSize": "Ukuran font"
+  "DE.Views.WatermarkSettingsDialog.tipFontSize": "Ukuran font",
+  "Common.Views.ShortcutsEditDialog.txtCantBeEdited": "This shortcut can’t be edited"
 }

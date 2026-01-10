@@ -4290,5 +4290,6 @@
   "DE.Views.WatermarkSettingsDialog.textTransparency": "Semitransparente",
   "DE.Views.WatermarkSettingsDialog.textUnderline": "Sublinhar",
   "DE.Views.WatermarkSettingsDialog.tipFontName": "Nome da Fonte",
-  "DE.Views.WatermarkSettingsDialog.tipFontSize": "Tamanho da fonte"
+  "DE.Views.WatermarkSettingsDialog.tipFontSize": "Tamanho da fonte",
+  "Common.Views.ShortcutsEditDialog.txtCantBeEdited": "This shortcut can’t be edited"
 }

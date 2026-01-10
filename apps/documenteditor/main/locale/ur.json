@@ -4290,5 +4290,6 @@
   "DE.Views.WatermarkSettingsDialog.textTransparency": "نیم شفاف",
   "DE.Views.WatermarkSettingsDialog.textUnderline": "لکیر",
   "DE.Views.WatermarkSettingsDialog.tipFontName": "فونٹ کا نام",
-  "DE.Views.WatermarkSettingsDialog.tipFontSize": "فونٹ کا سائز"
+  "DE.Views.WatermarkSettingsDialog.tipFontSize": "فونٹ کا سائز",
+  "Common.Views.ShortcutsEditDialog.txtCantBeEdited": "This shortcut can’t be edited"
 }
