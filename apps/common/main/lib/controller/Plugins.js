@@ -1114,6 +1114,13 @@ define([
                     autostart = autostart.concat(val || []);
                 }
 
+                // Ensure AI background plugin is running so Copilot panel icon is present by default (Word editor).
+                // The AI plugin itself is type="background" and otherwise won't run until manually started.
+                var aiPluginGuid = 'asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}';
+                if (this.editor === 'word' && autostart.indexOf(aiPluginGuid) < 0) {
+                    autostart.unshift(aiPluginGuid);
+                }
+
                 this.autostart = autostart;
                 this.parsePlugins(arr, false);
             }
