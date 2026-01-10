@@ -182,7 +182,8 @@ label {
 }
 
 .right-panel {
-    width: 220px;
+    // Fluid width: fill parent minus 40px tool-menu-btns strip on the right
+    width: calc(100% - 40px);
     height: 100%;
     display: none;
     padding: @layout-padding-right-panel-ie;

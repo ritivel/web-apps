@@ -134,7 +134,8 @@ define([
                 stretch: true
             }, {
                 el: $(items[2]).hide(),
-                rely: true
+                rely: true,
+                alias: 'right'
             }];
 
             if ( Common.UI.isRTL() ) {

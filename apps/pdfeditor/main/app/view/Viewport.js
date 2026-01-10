@@ -112,12 +112,13 @@ define([
                     autohide: false,
                     min: 300,
                     max: 600
-                }}, { // sdk
+                }            }, { // sdk
                 el: items[1],
                 stretch: true
             }, {
                 el: $(items[2]).hide(),
-                rely: true
+                rely: true,
+                alias: 'right'
             }
             ];
 

@@ -1,4 +1,5 @@
 <div id="view-right-menu" class="tool-menu right">
+    <div class="right-menu-resize-handle"></div>
     <div class="right-panel side-panel">
         <div class="content-box">
             <div id="id-paragraph-settings" class="settings-panel"></div>

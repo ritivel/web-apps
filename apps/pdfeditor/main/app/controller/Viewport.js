@@ -218,8 +218,8 @@ define([
             default:
                 this.viewport.vlayout.doLayout();
             case 'rightmenu':
-                    this.viewport.hlayout.doLayout();
-                    break;
+                this.viewport.hlayout.doLayout();
+                break;
             case 'leftmenu':
                 var panel = this.viewport.hlayout.getItem('left');
                 if (panel.resize.el) {

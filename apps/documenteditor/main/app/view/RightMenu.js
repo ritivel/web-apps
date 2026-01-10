@@ -37,8 +37,8 @@
  */
 
 var SCALE_MIN = 40;
-var MENU_SCALE_PART = 260;
-var MENU_BASE_WIDTH = 220;
+var MENU_SCALE_PART = 360;
+var MENU_BASE_WIDTH = 320;
 
 define([
     'text!documenteditor/main/app/template/RightMenu.template',
@@ -163,7 +163,8 @@ define([
             Common.Utils.InternalSettings.set("de-hide-right-settings", !open);
 
             Common.NotificationCenter.on('app:repaint', _.bind(function() {
-                this.$el.css('width', ((open) ? MENU_SCALE_PART : SCALE_MIN) + 'px');
+                var storedWidth = parseInt(Common.localStorage.getItem('de-rightmenu-width')) || MENU_SCALE_PART;
+                this.$el.css('width', ((open) ? storedWidth : SCALE_MIN) + 'px');
             }, this));
 
             Common.NotificationCenter.on('uitheme:changed', _.bind(function() {
@@ -188,6 +189,15 @@ define([
             this.btnChart.setElement($markup.findById('#id-right-menu-chart'), false);         this.btnChart.render();
             this.btnShape.setElement($markup.findById('#id-right-menu-shape'), false);         this.btnShape.render();
             this.btnTextArt.setElement($markup.findById('#id-right-menu-textart'), false);     this.btnTextArt.render();
+
+            // Hide all settings buttons - only AI panel will be shown via plugins
+            this.btnText.$el.hide();
+            this.btnTable.$el.hide();
+            this.btnImage.$el.hide();
+            this.btnHeaderFooter.$el.hide();
+            this.btnChart.$el.hide();
+            this.btnShape.$el.hide();
+            this.btnTextArt.$el.hide();
 
             this.btnText.on('click',            this.onBtnMenuClick.bind(this));
             this.btnTable.on('click',           this.onBtnMenuClick.bind(this));
@@ -216,9 +226,10 @@ define([
                     allowMouseEventsOnDisabled: true
                 });
                 this._settings[Common.Utils.documentSettingsType.MailMerge]   = {panel: "id-mail-merge-settings", btn: this.btnMailMerge};
-                this.btnMailMerge.setElement($markup.findById('#id-right-menu-mail-merge'), false); this.btnMailMerge.render().setVisible(true);
+                this.btnMailMerge.setElement($markup.findById('#id-right-menu-mail-merge'), false); this.btnMailMerge.render().setVisible(false);
                 this.btnMailMerge.on('click', this.onBtnMenuClick.bind(this));
                 this.mergeSettings = new DE.Views.MailMergeSettings();
+                this.btnMailMerge.$el.hide(); // Hide mail merge button
             }
 
             if (mode && (mode.isSignatureSupport || mode.isPDFSignatureSupport)) {
@@ -232,9 +243,10 @@ define([
                     allowMouseEventsOnDisabled: true
                 });
                 this._settings[Common.Utils.documentSettingsType.Signature]   = {panel: "id-signature-settings", btn: this.btnSignature};
-                this.btnSignature.setElement($markup.findById('#id-right-menu-signature'), false); this.btnSignature.render().setVisible(true);
+                this.btnSignature.setElement($markup.findById('#id-right-menu-signature'), false); this.btnSignature.render().setVisible(false);
                 this.btnSignature.on('click', this.onBtnMenuClick.bind(this));
                 this.signatureSettings = new DE.Views.SignatureSettings();
+                this.btnSignature.$el.hide(); // Hide signature button
             }
 
             if (mode && mode.canFeatureContentControl && mode.canEditContentControl && mode.isFormCreator) {
@@ -248,9 +260,10 @@ define([
                     allowMouseEventsOnDisabled: true
                 });
                 this._settings[Common.Utils.documentSettingsType.Form]   = {panel: "id-form-settings", btn: this.btnForm};
-                this.btnForm.setElement($markup.findById('#id-right-menu-form'), false); this.btnForm.render().setVisible(true);
+                this.btnForm.setElement($markup.findById('#id-right-menu-form'), false); this.btnForm.render().setVisible(false);
                 this.btnForm.on('click', this.onBtnMenuClick.bind(this));
                 this.formSettings = new DE.Views.FormSettings();
+                this.btnForm.$el.hide(); // Hide form button
             }
 
 
@@ -262,6 +275,9 @@ define([
                 });
             }
 
+            // Initialize resize handle - use this.$el since markup is already added to DOM
+            this.initResizeHandle();
+
             if (open) {
                 $markup.findById('#id-paragraph-settings').closest('.right-panel').css("display", "inline-block" );
                 $markup.findById('#id-paragraph-settings').addClass("active");
@@ -271,6 +287,90 @@ define([
             this.trigger('render:after', this);
 
             return this;
+        },
+
+        initResizeHandle: function() {
+            var me = this;
+            this.resizeHandle = this.$el.find('.right-menu-resize-handle');
+            
+            // Ensure parent has position relative for absolute positioning to work
+            this.$el.css('position', 'relative');
+            
+            // Apply inline styles to ensure resize handle works even without CSS compilation
+            this.resizeHandle.css({
+                'position': 'absolute',
+                'left': '0',
+                'top': '0',
+                'width': '5px',
+                'height': '100%',
+                'cursor': 'col-resize',
+                'background': 'transparent',
+                'z-index': '1000',
+                'display': 'none'
+            });
+            
+            var isResizing = false;
+            var startX, startWidth;
+            var MIN_WIDTH = 300;
+            var MAX_WIDTH = 600;
+
+            this.resizeHandle.on('mouseenter', function() {
+                if (!me.minimizedMode) {
+                    $(this).css('background-color', 'rgba(0,0,0,0.1)');
+                }
+            }).on('mouseleave', function() {
+                if (!isResizing) {
+                    $(this).css('background-color', 'transparent');
+                }
+            });
+
+            this.resizeHandle.on('mousedown', function(e) {
+                if (me.minimizedMode) return;
+                
+                isResizing = true;
+                startX = e.pageX;
+                startWidth = me.$el.width();
+                me.resizeHandle.css('background-color', 'rgba(0,0,0,0.2)');
+                
+                $(document).on('mousemove.rightmenu-resize', function(e) {
+                    if (!isResizing) return;
+                    
+                    var diff = startX - e.pageX; // Inverted for right panel
+                    var newWidth = startWidth + diff;
+                    
+                    // Clamp to min/max
+                    newWidth = Math.max(MIN_WIDTH, Math.min(MAX_WIDTH, newWidth));
+                    
+                    me.$el.width(newWidth);
+                    Common.NotificationCenter.trigger('layout:changed', 'rightmenu');
+                });
+                
+                $(document).on('mouseup.rightmenu-resize', function(e) {
+                    if (!isResizing) return;
+                    
+                    isResizing = false;
+                    me.resizeHandle.css('background-color', 'transparent');
+                    
+                    // Store the new width
+                    var finalWidth = me.$el.width();
+                    if (finalWidth > SCALE_MIN) {
+                        Common.localStorage.setItem('de-rightmenu-width', finalWidth);
+                    }
+                    
+                    $(document).off('mousemove.rightmenu-resize');
+                    $(document).off('mouseup.rightmenu-resize');
+                    
+                    Common.NotificationCenter.trigger('layout:changed', 'rightmenu');
+                });
+                
+                e.preventDefault();
+            });
+        },
+
+        showResizeHandle: function(show) {
+            if (this.resizeHandle && this.resizeHandle.length) {
+                this.resizeHandle.css('display', show ? 'block' : 'none');
+            }
         },
 
         setApi: function(api) {
@@ -312,11 +412,15 @@ define([
 
             if (btn && btn.pressed) {
                 if ( this.minimizedMode ) {
-                    $(this.el).width(MENU_SCALE_PART);
+                    // Use stored width or default to MENU_SCALE_PART
+                    var storedWidth = parseInt(Common.localStorage.getItem('de-rightmenu-width')) || MENU_SCALE_PART;
+                    $(this.el).width(storedWidth);
                     target_pane_parent.css("display", "inline-block" );
                     this.minimizedMode = false;
                     Common.localStorage.setItem("de-hide-right-settings", 0);
                     Common.Utils.InternalSettings.set("de-hide-right-settings", false);
+                    // Show resize handle when panel is expanded
+                    this.showResizeHandle(true);
                 }
                 target_pane_parent.find('.content-box > .active').removeClass('active');
                 target_pane && target_pane.addClass("active");
@@ -325,11 +429,18 @@ define([
                     this.scroller.scrollTop(0);
                 }
             } else {
+                // Store current width before minimizing
+                var currentWidth = $(this.el).width();
+                if (currentWidth > SCALE_MIN) {
+                    Common.localStorage.setItem('de-rightmenu-width', currentWidth);
+                }
                 target_pane_parent.css("display", "none" );
                 $(this.el).width(SCALE_MIN);
                 this.minimizedMode = true;
                 Common.localStorage.setItem("de-hide-right-settings", 1);
                 Common.Utils.InternalSettings.set("de-hide-right-settings", true);
+                // Hide resize handle when panel is minimized
+                this.showResizeHandle(false);
             }
 
             btn && !isPlugin && this.fireEvent('rightmenuclick', [this, btn.options.asctype, this.minimizedMode, e]);
@@ -376,9 +487,16 @@ define([
                 if (item.btn.isActive())
                     item.btn.toggle(false, true);
             });
+            // Store current width before minimizing
+            var currentWidth = $(this.el).width();
+            if (currentWidth > SCALE_MIN) {
+                Common.localStorage.setItem('de-rightmenu-width', currentWidth);
+            }
             target_pane.css("display", "none" );
             $(this.el).width(SCALE_MIN);
             this.minimizedMode = true;
+            // Hide resize handle when panel is minimized
+            this.showResizeHandle(false);
             Common.NotificationCenter.trigger('layout:changed', 'rightmenu');
         },
 
@@ -390,8 +508,8 @@ define([
         },
 
         setButtons: function () {
-            var allButtons = [this.btnText, this.btnTable, this.btnImage, this.btnHeaderFooter, this.btnShape, this.btnChart, this.btnTextArt,
-                    this.btnMailMerge, this.btnSignature, this.btnForm];
+            // Settings buttons are hidden - only show plugin buttons (AI panel)
+            var allButtons = [];
             Common.UI.SideMenu.prototype.setButtons.apply(this, [allButtons]);
         },
 
@@ -400,11 +518,13 @@ define([
         },
 
         updateWidth: function() {
+            // Calculate default width based on paddings but don't force fixed width on .right-panel
+            // CSS now handles .right-panel width as calc(100% - 40px) for fluid resize
             var pane = $(this.el).find('.right-panel'),
                 paddings = parseInt(pane.css('padding-left')) + parseInt(pane.css('padding-right'));
-            pane.css('width', MENU_BASE_WIDTH + paddings + 'px');
             MENU_SCALE_PART = SCALE_MIN + MENU_BASE_WIDTH + paddings;
-            this.$el.css('width', (!Common.Utils.InternalSettings.get("de-hide-right-settings") ? MENU_SCALE_PART : SCALE_MIN) + 'px');
+            var storedWidth = parseInt(Common.localStorage.getItem('de-rightmenu-width')) || MENU_SCALE_PART;
+            this.$el.css('width', (!Common.Utils.InternalSettings.get("de-hide-right-settings") ? storedWidth : SCALE_MIN) + 'px');
         },
 
         txtParagraphSettings:       'Paragraph Settings',

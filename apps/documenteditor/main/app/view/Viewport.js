@@ -127,7 +127,14 @@ define([
                 stretch: true
             }, { // right menu
                 el: $(items[2]).hide(),
-                rely: true
+                rely: true,
+                alias: 'right',
+                resize: {
+                    hidden: true,
+                    autohide: false,
+                    min: -600,
+                    max: -300
+                }
             }
             ];
 
@@ -135,6 +142,9 @@ define([
                 iarray[0].resize.min = -600;
                 iarray[0].resize.max = -300;
                 [iarray[1].resize.min, iarray[1].resize.max] = [-600, -300];
+                // For right menu in RTL, use positive values (will be on left side visually after swap)
+                iarray[3].resize.min = 300;
+                iarray[3].resize.max = 600;
 
                 [iarray[0], iarray[3]] = [iarray[3], iarray[0]];
                 [iarray[1], iarray[2]] = [iarray[2], iarray[1]];

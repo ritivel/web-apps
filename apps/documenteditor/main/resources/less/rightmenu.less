@@ -425,3 +425,31 @@
     }
 }
 
+// Right menu resize handle
+.right-menu-resize-handle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 1000;
+    display: none;
+
+    &:hover {
+        background-color: @highlight-button-hover-ie;
+        background-color: @highlight-button-hover;
+    }
+
+    &.active {
+        background-color: @highlight-button-pressed-ie;
+        background-color: @highlight-button-pressed;
+    }
+
+    .rtl & {
+        left: auto;
+        right: 0;
+    }
+}
+

@@ -107,6 +107,14 @@ define([
 
             resumeEvents: function() {
                 this.isSuspendEvents = false;
+            },
+
+            show: function() {
+                $(this.el).show();
+            },
+
+            hide: function() {
+                $(this.el).hide();
             }
         }),
 

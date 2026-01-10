@@ -146,10 +146,15 @@ define([
             $(window).on('resize', _.bind(this.onWindowResize, this));
 
             var leftPanel = $('#left-menu'),
-                histPanel = $('#left-panel-history');
+                histPanel = $('#left-panel-history'),
+                rightPanel = $('#right-menu');
             this.viewport.hlayout.on('layout:resizedrag', function() {
                 this.api.Resize();
-                Common.localStorage.setItem('de-mainmenu-width', histPanel.is(':visible') ? (histPanel.width()+SCALE_MIN) : leftPanel.width() );
+                Common.localStorage.setItem('de-mainmenu-width', histPanel.is(':visible') ? (histPanel.width()+40) : leftPanel.width() );
+                // Store right menu width if it's expanded
+                if (rightPanel.width() > 40) {
+                    Common.localStorage.setItem('de-rightmenu-width', rightPanel.width());
+                }
             }, this);
 
             this.boxSdk = $('#editor_sdk');
@@ -225,6 +230,16 @@ define([
             default:
                 this.viewport.vlayout.doLayout();
             case 'rightmenu':
+                var panel = this.viewport.hlayout.getItem('right');
+                if (panel.resize && panel.resize.el) {
+                    if (panel.el.width() > 40) {
+                        this.boxSdk.css('border-right', '');
+                        panel.resize.el.show();
+                    } else {
+                        panel.resize.el.hide();
+                        this.boxSdk.css('border-right', '0 none');
+                    }
+                }
                 this.viewport.hlayout.doLayout();
                 break;
             case 'history':

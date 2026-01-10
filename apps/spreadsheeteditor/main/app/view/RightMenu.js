@@ -37,8 +37,8 @@
  */
 
 var SCALE_MIN = 40;
-var MENU_SCALE_PART = 260;
-var MENU_BASE_WIDTH = 220;
+var MENU_SCALE_PART = 360;
+var MENU_BASE_WIDTH = 320;
 
 define([
     'text!spreadsheeteditor/main/app/template/RightMenu.template',
