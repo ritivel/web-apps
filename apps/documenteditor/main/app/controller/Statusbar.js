@@ -173,6 +173,16 @@ define([
                             me.btnTurnReview.updateHint(me.tipReview);
                     }
                 }
+
+                // Toggle citations button
+                if (me.statusbar.btnToggleCitations) {
+                    me.statusbar.btnToggleCitations.on('click', _.bind(me.onToggleCitations, me));
+                    // Initialize state from document
+                    var state = me.api.asc_GetFootnotesEndnotesVisible();
+                    if (state) {
+                        me.statusbar.btnToggleCitations.toggle(state.footnotes && state.endnotes, true);
+                    }
+                }
             });
         },
 
@@ -211,6 +221,7 @@ define([
             this.api.asc_registerCallback('asc_onZoomChange',   _.bind(this._onZoomChange, this));
             this.api.asc_registerCallback('asc_onTextLanguage', _.bind(this._onTextLanguage, this));
             this.api.asc_registerCallback('asc_onOnTrackRevisionsChange', _.bind(this.onApiTrackRevisionsChange, this));
+            this.api.asc_registerCallback('asc_onFootnotesEndnotesVisibilityChange', _.bind(this.onApiCitationsVisibilityChange, this));
 
             this.statusbar.setApi(api);
         },
@@ -366,6 +377,21 @@ define([
             if (this.statusbar && this.statusbar.btnHandTool) {
                 this.statusbar.btnHandTool.toggle(isHandMode, true);
                 this.statusbar.btnSelectTool.toggle(!isHandMode, true);
+            }
+        },
+
+        onToggleCitations: function(btn, e) {
+            if (this.api) {
+                var visible = btn.pressed;
+                this.api.asc_SetFootnotesEndnotesVisible(visible, visible);
+            }
+            Common.NotificationCenter.trigger('edit:complete', this.statusbar);
+        },
+
+        onApiCitationsVisibilityChange: function(bFootnotes, bEndnotes) {
+            var visible = bFootnotes && bEndnotes;
+            if (this.statusbar && this.statusbar.btnToggleCitations) {
+                this.statusbar.btnToggleCitations.toggle(visible, true);
             }
         },
 

@@ -90,6 +90,10 @@ define([
                 me.langMenu.on('item:click', _.bind(_clickLanguage, this));
             }
 
+            if (me.btnToggleCitations && me.btnToggleCitations.cmpEl) {
+                me.btnToggleCitations.updateHint(me.tipToggleCitations);
+            }
+
             me.cntZoom.updateHint(me.tipZoomFactor);
             me.cntZoom.cmpEl.on({
                 'show.bs.dropdown': function () {
@@ -246,6 +250,12 @@ define([
                     menu: true
                 });
 
+                this.btnToggleCitations = new Common.UI.Button({
+                    hintAnchor: 'top',
+                    enableToggle: true,
+                    pressed: true
+                });
+
                 this.langMenu = new Common.UI.MenuSimple({
                     cls: 'lang-menu shifted-right',
                     style: 'margin-top:-5px;',
@@ -357,6 +367,7 @@ define([
                     me.btnLanguage.render($('#btn-cnt-lang', me.$layout));
                     me.btnLanguage.setMenu(me.langMenu);
                     me.langMenu.prevTip = 'en';
+                    _btn_render(me.btnToggleCitations, $('#btn-toggle-citations', me.$layout));
                 }
                 me.btnDocInfo.render($('#slot-status-btn-info', me.$layout));
 
@@ -546,7 +557,8 @@ define([
             txtWords: 'Words',
             txtParagraphs: 'Paragraphs',
             txtSymbols: 'Symbols',
-            txtSpaces: 'Symbols with spaces'
+            txtSpaces: 'Symbols with spaces',
+            tipToggleCitations: 'Toggle Footnotes/Endnotes'
         }, DE.Views.Statusbar || {}));
     }
 );

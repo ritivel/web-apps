@@ -954,6 +954,8 @@ define([
 
                     var trackChanges = me.appConfig.customization && me.appConfig.customization.review ? me.appConfig.customization.review.trackChanges : undefined;
                     (trackChanges===undefined) && (trackChanges = me.appConfig.customization ? me.appConfig.customization.trackChanges : undefined);
+                    // Default to true if trackChanges is not explicitly configured
+                    (trackChanges===undefined) && (trackChanges = true);
 
                     if (config.isReviewOnly || trackChanges!==undefined)
                         me.api.asc_SetLocalTrackRevisions(config.isReviewOnly || trackChanges===true);
